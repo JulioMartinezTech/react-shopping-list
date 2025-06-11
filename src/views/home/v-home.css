@@ -1,0 +1,46 @@
+.v-home {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 30px;
+    background-color: beige;
+    padding: 20px 0;
+
+}
+
+.v-home__container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+
+}
+
+.c-home__buttom-container {
+    width: 100%;
+    height: 80px;
+    position: fixed;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.c-home__buttom {
+    width: 200px;
+    height: 60px;
+    background-color: #f5b041;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+}
