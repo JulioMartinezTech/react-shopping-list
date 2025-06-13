@@ -2,7 +2,13 @@ import "./c-search-bar.css";
 
 import ListIcon from "../../assets/img/list-icon.png";
 
-const CSearchBar = () => {
+//interface
+
+interface SearchBarProps {
+  showList: () => void;
+}
+
+const CSearchBar = ({ showList }: SearchBarProps) => {
   return (
     <div className="c-search-bar">
       <form className="c-search-bar__form">
@@ -12,7 +18,7 @@ const CSearchBar = () => {
           placeholder="Busca un artículo"
         />
       </form>
-      <div className="c-search-bar__list-icon-button">
+      <div className="c-search-bar__list-icon-button" onClick={showList}>
         <img
           src={ListIcon}
           alt="List Icon"

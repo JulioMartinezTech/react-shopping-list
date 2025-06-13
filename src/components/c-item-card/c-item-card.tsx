@@ -6,23 +6,39 @@ import "./c-item-card.css";
 import RemoveIcon from "../../assets/img/remove-icon.png";
 
 interface CItemCardProps {
+  id: number;
   img: string;
   text?: string;
+  addItemToList: (payload: { id: number; quantity: number }) => void;
+  onList?: boolean;
+  itemQuantity?: number;
 }
 
-const CItemCard = ({ img }: CItemCardProps) => {
-  const [quantity, setQuantity] = useState<number>(0);
+const CItemCard = ({
+  img,
+  id,
+  addItemToList,
+  onList,
+  itemQuantity,
+}: CItemCardProps) => {
+  const [quantity, setQuantity] = useState<number>(
+    itemQuantity ? itemQuantity : 0
+  );
 
-  const addItem = () => {
-    setQuantity(quantity + 1);
+  const addItem = async () => {
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    addItemToList({ id: id, quantity: newQuantity });
   };
   const removeItem = () => {
-    setQuantity(quantity - 1);
+    const newQuantity = quantity - 1;
+    setQuantity(newQuantity);
+    addItemToList({ id: id, quantity: newQuantity });
   };
 
   return (
     <div className="c-item-card">
-      {quantity > 0 && (
+      {!onList && quantity > 0 && (
         <div className="c-item-card__remove-bottom" onClick={removeItem}>
           <img src={RemoveIcon} alt="" />
         </div>

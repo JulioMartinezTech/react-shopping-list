@@ -33,7 +33,8 @@
 .c-search-bar__list-icon-button {
     width: 18%;
     height: 100%;
-    background-color: #f5b041;
+    cursor: pointer;
+    background-color: #304F5C;
     display: flex;
     justify-content: center;
     align-items: center;
