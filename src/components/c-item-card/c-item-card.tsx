@@ -9,8 +9,7 @@ interface CItemCardProps {
   id: number;
   img: string;
   text?: string;
-  addItemToList: (payload: { id: number; quantity: number }) => void;
-  onList?: boolean;
+  addItemToList: (payload: { product_id: number; quantity: number }) => void;
   itemQuantity?: number;
 }
 
@@ -18,7 +17,6 @@ const CItemCard = ({
   img,
   id,
   addItemToList,
-  onList,
   itemQuantity,
 }: CItemCardProps) => {
   const [quantity, setQuantity] = useState<number>(
@@ -28,17 +26,17 @@ const CItemCard = ({
   const addItem = async () => {
     const newQuantity = quantity + 1;
     setQuantity(newQuantity);
-    addItemToList({ id: id, quantity: newQuantity });
+    addItemToList({ product_id: id, quantity: newQuantity });
   };
   const removeItem = () => {
     const newQuantity = quantity - 1;
     setQuantity(newQuantity);
-    addItemToList({ id: id, quantity: newQuantity });
+    addItemToList({ product_id: id, quantity: newQuantity });
   };
 
   return (
     <div className="c-item-card">
-      {!onList && quantity > 0 && (
+      {quantity > 0 && (
         <div className="c-item-card__remove-bottom" onClick={removeItem}>
           <img src={RemoveIcon} alt="" />
         </div>

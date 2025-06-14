@@ -3,9 +3,14 @@ import { useEffect, useState } from "react";
 
 //services
 import { fetchProducts } from "../../services/products";
+import {
+  fetchShoppingList,
+  addToShoppingList,
+  removeFromShoppingList,
+} from "../../services/shoppingList";
 
 //types
-import type { Product } from "../../types/products";
+import type { Product, ItemList } from "../../types/products";
 
 //css
 import "./v-home.css";
@@ -15,48 +20,56 @@ import CItemCard from "../../components/c-item-card/c-item-card";
 import CSearchBar from "../../components/c-search-bar/c-search-bar";
 import CListItem from "../../components/c-list-item/c-list-item";
 
-//interfaces
-interface ItemList {
-  id: number;
-  quantity: number;
-}
-
 const VHome = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [list, setList] = useState<ItemList[]>([]);
   const [showList, setShowList] = useState<boolean>(false);
 
-  const deleteItemFromList = (id: number) => {
-    setList((prevList) => prevList.filter((item) => item.id !== id));
-  };
-
-  const addToList = (data: ItemList) => {
-    const dataList = list ? [...list] : [];
-    const index = dataList.findIndex((item) => item.id === data.id);
-
-    if (index !== -1) {
-      if (data.quantity === 0) {
-        deleteItemFromList(data.id);
-      } else {
-        dataList[index] = { ...dataList[index], quantity: data.quantity };
-      }
-    } else {
-      dataList.push(data);
+  const deleteItemFromList = async (item_id: number) => {
+    try {
+      const response = await removeFromShoppingList(item_id);
+      setList((prevList) => prevList.filter((item) => item.id !== item_id));
+      return response;
+    } catch (error) {
+      console.error("Error to delete item", error);
     }
-
-    setList(dataList);
-    console.log(dataList);
   };
+
+  const saveListOnApi = async (product_id: number, quantity: number) => {
+    try {
+      const result = await addToShoppingList(product_id, quantity);
+
+      setList((prevList) => {
+        const index = prevList.findIndex(
+          (item) => item.product_id === product_id
+        );
+        if (index !== -1) {
+          const updatedList = [...prevList];
+          updatedList[index] = { ...updatedList[index], quantity };
+          return updatedList;
+        }
+        return [...prevList, result];
+      });
+
+      return result;
+    } catch (error) {
+      console.error("Error saving list", error);
+      return null;
+    }
+  };
+  // const multiSaveListOnApi = async (data: ItemList[]) => {
+  //   try {
+  //     const result = await multiAddToShoppingList(data);
+  //     return result;
+  //   } catch (error) {
+  //     console.error("Error saving list", error);
+  //   }
+  // };
 
   const validateQuantityForItem = (id: number) => {
-    const findItem = list.find((product) => product.id === id);
+    const findItem = list.find((product) => product.product_id === id);
     return findItem?.quantity;
   };
-
-  // const showListView = () => {
-  //   console.log("click");
-  //   setShowList(true);
-  // };
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -68,7 +81,17 @@ const VHome = () => {
       }
     };
 
+    const loadList = async () => {
+      try {
+        const data = await fetchShoppingList();
+        setList(data);
+      } catch (error) {
+        console.error("Error fetching list:", error);
+      }
+    };
+
     loadProducts();
+    loadList();
   }, []);
 
   return (
@@ -81,7 +104,7 @@ const VHome = () => {
               key={product.id}
               img={product.image_url}
               addItemToList={(data) => {
-                addToList(data);
+                saveListOnApi(data.product_id, data.quantity);
               }}
               itemQuantity={validateQuantityForItem(product.id) ?? 0}
               id={product.id}
@@ -93,30 +116,33 @@ const VHome = () => {
         <div className="v-home__list-container">
           {list.map((item) => {
             const productData = products.find(
-              (product) => product.id === item.id
+              (product) => product.id === item.product_id
             );
             if (!productData) {
               return null;
             }
             return (
               <CListItem
-                key={item.id}
-                id={item.id}
+                key={item.product_id}
+                id={item.product_id}
                 name={productData.name}
                 quantity={item.quantity}
-                removeItem={(id) => {
-                  deleteItemFromList(id);
+                removeItem={() => {
+                  deleteItemFromList(item.id);
                 }}
               />
             );
           })}
         </div>
       )}
-      {showList && (
-        <div className="c-home__buttom-container">
+      {/* {showList && (
+        <div
+          className="c-home__buttom-container"
+          onClick={() => saveListOnApi(list)}
+        >
           <div className="c-home__buttom">Save list</div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
